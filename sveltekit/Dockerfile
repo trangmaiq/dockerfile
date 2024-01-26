@@ -1,4 +1,3 @@
-# Stage 1: Install dependencies and build the SvelteKit application
 FROM node:18-alpine AS build
 
 # Set the working directory
@@ -10,7 +9,7 @@ COPY package*.json ./
 # COPY yarn.lock ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 # If using yarn, uncomment the next line
 # RUN yarn install
 
@@ -23,16 +22,13 @@ RUN npm run build
 # RUN yarn build
 
 # Stage 2: Serve the app using a static server
-FROM nginx:alpine AS serve
+# FROM node:19-alpine AS serve
 
-# Set working directory to nginx resources directory
-WORKDIR /usr/share/nginx/html
-
-# Remove default nginx static assets
-RUN rm -rf ./*
 
 # Copy static assets from builder stage
-COPY --from=build /app/build .
+# COPY --from=build /app/build .
+
+# TODO: Use serve
 
 # Containers run nginx with global directives and daemon off
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["npm", "start"]
